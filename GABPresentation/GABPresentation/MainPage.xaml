@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GABPresentation"
+             x:Class="GABPresentation.MainPage">
+
+    <StackLayout>
+        <Button 
+            x:Name="boton"
+            Text="Verificar rostro"
+            Clicked="Button_Clicked"
+            HorizontalOptions="Center"            
+            HeightRequest="80"
+            WidthRequest="280"
+            FontSize="Medium"
+            Margin="0,12"/>
+
+        <Label 
+            x:Name="labelResultado"
+            FontSize="Large"
+            HorizontalOptions="Center"
+            Margin="0,10,0,10"/>
+
+        <Image
+            x:Name="imagen"
+            WidthRequest="200"
+            HorizontalOptions="Center" />
+    </StackLayout>
+
+</ContentPage>
