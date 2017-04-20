@@ -2,7 +2,6 @@
 using Microsoft.ProjectOxford.Face;
 using Microsoft.ProjectOxford.Face.Contract;
 using Plugin.Media;
-using Plugin.Media.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,7 @@ namespace GABPresentation
 {
     public partial class MainPage : ContentPage
     {
-        private const string ApiKey = "[your api key]";
+        private const string ApiKey = "fb637bdd0cf54c8180a6d8ab05d98a78";
         private string _idGrupo;
         private FaceServiceClient _clienteFace;
         private List<MSP> _listaMSPs;
@@ -44,6 +43,11 @@ namespace GABPresentation
                 {
                     Nombre = "Raian Bocanegra",
                     FotoUrl = "https://media.licdn.com/mpr/mpr/shrinknp_200_200/AAEAAQAAAAAAAAexAAAAJDY1OWZmMTY1LTkxODMtNDc0ZS05OGU5LTFmMjU4YTg4YTZhZQ.jpg"
+                },
+                new MSP()
+                {
+                    Nombre = "Melanie Pilco",
+                    FotoUrl = "http://lima.azurebootcamp.net/agenda/image/GWAB/Staff/melaniepilco.jpg"
                 }
             };
 
@@ -56,18 +60,21 @@ namespace GABPresentation
 
             _clienteFace = new FaceServiceClient(ApiKey);
 
-            #region PASO 1
-            labelResultado.Text = "Creando grupo...";
 
+
+            #region PASO 1
+
+            labelResultado.Text = "Creando grupo...";
             _idGrupo = Guid.NewGuid().ToString();
             await _clienteFace.CreatePersonGroupAsync(_idGrupo, "MSPs");
 
             #endregion
 
+
+
             #region PASO 2
 
             labelResultado.Text = "Agregando personas a grupo...";
-
             foreach (var msp in _listaMSPs)
             {
                 var personaCreada = await _clienteFace.CreatePersonAsync(_idGrupo, msp.Nombre);
@@ -76,16 +83,18 @@ namespace GABPresentation
 
             #endregion
 
+
+
             #region PASO 3
 
             labelResultado.Text = "Entrenando modelo...";
-
             await _clienteFace.TrainPersonGroupAsync(_idGrupo);
-
-            labelResultado.Text = string.Empty;
 
             #endregion
 
+
+
+            labelResultado.Text = string.Empty;
             boton.IsEnabled = true;
         }
 
@@ -120,6 +129,10 @@ namespace GABPresentation
                 imagen.Source = photo.Path;
                 #endregion
 
+
+
+                #region PASO 4
+
                 //  Cargar imagen a Cognitive Services
                 using (var stream = photo.GetStream())
                 {
@@ -131,13 +144,13 @@ namespace GABPresentation
                         return;
                     }
 
-                    //  Selecciona los id del resultado
+                    //  Selecciona solo los id de los rostros detectados
                     var idsRostros = rostros.Select(rostro => rostro.FaceId).ToArray();
 
                     //  Pregunta al servicio por las caras detectadas
                     var resultadoIdentificacion = await _clienteFace.IdentifyAsync(_idGrupo, idsRostros);
 
-                    //  Verifica si se indentificó a alguna persona en el grupo
+                    //  Verifica si se identificó a alguna persona en el grupo
                     var candidatos = resultadoIdentificacion[0].Candidates;
                     if (candidatos.Length == 0)
                     {
@@ -148,8 +161,12 @@ namespace GABPresentation
                     //  Trae información de la persona identificada
                     var persona = await _clienteFace.GetPersonAsync(_idGrupo, candidatos[0].PersonId);
 
-                    labelResultado.Text = $"¡Hola, {persona.Name}!";                    
+                    labelResultado.Text = $"¡Hola, {persona.Name}!";
                 }
+
+                #endregion
+
+
             }
             catch (FaceAPIException fex)
             {
